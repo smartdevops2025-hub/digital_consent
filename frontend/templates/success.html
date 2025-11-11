@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card" style="text-align: center;">
+    <div style="font-size: 4rem; margin-bottom: 1rem;">✅</div>
+    <h2 style="color: var(--mes-red); margin-bottom: 1rem;">Patient Consent Saved Successfully!</h2>
+    
+    <div style="background: var(--mes-light-gray); padding: 1.5rem; border-radius: 8px; margin: 1.5rem 0; border-left: 4px solid #28a745;">
+        <h3 style="color: var(--mes-dark-gray); margin-bottom: 1rem;">Consent Details</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; text-align: left;">
+            <div><strong>Patient Name:</strong> {{ patient_name }}</div>
+            <div><strong>Consent ID:</strong> {{ consent_id }}</div>
+            <div><strong>File Generated:</strong> {{ final_pdf_filename }}</div>
+            <div><strong>Status:</strong> <span style="color: #ffc107; font-weight: bold;">Pending Doctor Signature</span></div>
+        </div>
+    </div>
+    
+    <div style="background: #e7f3ff; padding: 1.5rem; border-radius: 8px; margin: 1.5rem 0; border-left: 4px solid #007bff;">
+        <h4 style="color: #007bff; margin-bottom: 1rem;">Next Steps</h4>
+        <p style="margin-bottom: 1rem;">The patient consent has been recorded. Now the doctor needs to provide their digital signature to complete the process.</p>
+        
+        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 1.5rem;">
+            <a href="{{ url_for('doctor_signature_page', consent_id=consent_id) }}" class="btn-primary" style="display: flex; align-items: center; gap: 8px;">
+                <span>👨‍⚕️</span> Doctor Signature
+            </a>
+            <a href="{{ url_for('dashboard') }}" class="btn-secondary">Back to Dashboard</a>
+        </div>
+    </div>
+    
+    <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--mes-border);">
+        <p style="color: #6c757d; margin-bottom: 1rem;">You can also complete the doctor signature later from the consents list.</p>
+        <a href="{{ url_for('view_consents') }}" class="btn-secondary">View All Consents</a>
+    </div>
+</div>
+{% endblock %}

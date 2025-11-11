@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Welcome to Digital Consent System</h2>
+<div class="dashboard">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin: 20px 0;">
+        <div style="background: #e3f2fd; padding: 20px; border-radius: 8px; text-align: center;">
+            <h3>Total Patients</h3>
+            <p style="font-size: 24px; font-weight: bold;">{{ patients|length }}</p>
+        </div>
+        <div style="background: #e8f5e8; padding: 20px; border-radius: 8px; text-align: center;">
+            <h3>Quick Actions</h3>
+            <a href="{{ url_for('new_patient') }}" class="btn">Add New Patient</a>
+        </div>
+    </div>
+
+    {% if patients %}
+    <h3>Recent Patients</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Patient ID</th>
+                <th>Name</th>
+                <th>Age</th>
+                <th>Gender</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for patient in patients %}
+            <tr>
+                <td>{{ patient.patient_id }}</td>
+                <td>{{ patient.name }}</td>
+                <td>{{ patient.age }}</td>
+                <td>{{ patient.gender }}</td>
+                <td>
+                    <a href="{{ url_for('new_consent', patient_id=patient.id) }}" class="btn">Create Consent</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div style="text-align: center; padding: 40px;">
+        <h3>No patients found</h3>
+        <p>Get started by adding your first patient.</p>
+        <a href="{{ url_for('new_patient') }}" class="btn">Add First Patient</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

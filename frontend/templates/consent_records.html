@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card">
+    <h2 style="color: var(--mes-red); margin-bottom: 1.5rem;">All Consent Records</h2>
+    
+    {% if records %}
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Patient Name</th>
+                    <th>Consent Type</th>
+                    <th>Date</th>
+                    <th>Counsellor</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in records %}
+                <tr>
+                    <td>{{ record[0] }}</td>
+                    <td>{{ record[1] }}</td>
+                    <td>{{ record[16] if record[16] else 'General Consent' }}</td>
+                    <td>{{ record[12] if record[12] else 'N/A' }}</td>
+                    <td>{{ record[10] if record[10] else 'N/A' }}</td>
+                    <td>
+                        <a href="{{ url_for('view_consent', record_id=record[0]) }}" class="btn-primary" style="padding: 5px 10px; font-size: 0.8rem;">View</a>
+                        <a href="{{ url_for('download_consent', record_id=record[0]) }}" class="btn-success" style="padding: 5px 10px; font-size: 0.8rem;">Download</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div style="text-align: center; padding: 2rem;">
+        <p>No consent records found.</p>
+        <a href="{{ url_for('dashboard') }}" class="btn-primary">Create New Consent</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

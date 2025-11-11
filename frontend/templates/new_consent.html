@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Create Consent Form for {{ patient.name }}</h2>
+<form method="POST">
+    <input type="hidden" name="patient_id" value="{{ patient.id }}">
+    
+    <div class="form-group">
+        <label for="procedure_name">Procedure Name:</label>
+        <input type="text" id="procedure_name" name="procedure_name" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="procedure_details">Procedure Details (English):</label>
+        <textarea id="procedure_details" name="procedure_details" rows="4" required></textarea>
+    </div>
+    
+    <div class="form-group">
+        <label for="risks">Risks and Complications (English):</label>
+        <textarea id="risks" name="risks" rows="4" required></textarea>
+    </div>
+    
+    <div class="form-group">
+        <label for="alternatives">Alternative Treatments (English):</label>
+        <textarea id="alternatives" name="alternatives" rows="4" required></textarea>
+    </div>
+    
+    <button type="submit">Create Consent Form</button>
+    <a href="{{ url_for('index') }}" style="margin-left: 10px;">Cancel</a>
+</form>
+{% endblock %}

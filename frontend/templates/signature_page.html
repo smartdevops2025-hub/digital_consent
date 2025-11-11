@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<style>
+    .signature-container {
+        background: white;
+        border: 2px solid var(--mes-border);
+        border-radius: 8px;
+        padding: 2rem;
+        margin: 1.5rem 0;
+    }
+    
+    .signature-pad {
+        border: 2px dashed #ccc;
+        border-radius: 5px;
+        background: #f9f9f9;
+        cursor: crosshair;
+        margin: 1rem 0;
+    }
+    
+    .signature-actions {
+        display: flex;
+        gap: 1rem;
+        margin: 1rem 0;
+        flex-wrap: wrap;
+    }
+    
+    .preview-section {
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #eee;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2 style="color: var(--mes-red); margin-bottom: 1.5rem; text-align: center;">
+        ✍️ Digital Signature
+    </h2>
+    
+    <div class="signature-container">
+        <!-- Patient Details -->
+        <div class="preview-section">
+            <h3>Patient Details</h3>
+            <p><strong>Name:</strong> {{ consent_data.patient_name }}</p>
+            <p><strong>Age:</strong> {{ consent_data.patient_age }}</p>
+            <p><strong>MRN:</strong> {{ consent_data.patient_mrn }}</p>
+        </div>
+        
+        <!-- Signature Area -->
+        <div>
+            <h3>Please provide your digital signature:</h3>
+            <canvas id="signature-pad" class="signature-pad" width="600" height="200"></canvas>
+            
+            <div class="signature-actions">
+                <button type="button" id="clear-signature" class="btn-secondary">Clear Signature</button>
+                <button type="button" id="save-signature" class="btn-success">Save Signature</button>
+            </div>
+        </div>
+        
+        <!-- Save Form -->
+        <form id="consent-form" action="{{ url_for('save_consent') }}" method="post">
+            <input type="hidden" name="signature_data" id="signature-data">
+            
+            <div style="text-align: center; margin-top: 2rem;">
+                <button type="submit" class="btn-primary" id="submit-btn" disabled>
+                    ✓ Finalize and Save Consent
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const canvas = document.getElementById('signature-pad');
+    const ctx = canvas.getContext('2d');
+    let isDrawing = false;
+    let lastX = 0;
+    let lastY = 0;
+    
+    // Set canvas background
+    ctx.fillStyle = '#f9f9f9';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // Drawing functions
+    canvas.addEventListener('mousedown', startDrawing);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseup', stopDrawing);
+    canvas.addEventListener('mouseout', stopDrawing);
+    
+    // Touch events for mobile devices
+    canvas.addEventListener('touchstart', handleTouch);
+    canvas.addEventListener('touchmove', handleTouch);
+    canvas.addEventListener('touchend', stopDrawing);
+    
+    function startDrawing(e) {
+        isDrawing = true;
+        [lastX, lastY] = getCoordinates(e);
+    }
+    
+    function draw(e) {
+        if (!isDrawing) return;
+        
+        ctx.lineWidth = 2;
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = '#000';
+        
+        const [x, y] = getCoordinates(e);
+        
+        ctx.beginPath();
+        ctx.moveTo(lastX, lastY);
+        ctx.lineTo(x, y);
+        ctx.stroke();
+        
+        [lastX, lastY] = [x, y];
+    }
+    
+    function stopDrawing() {
+        isDrawing = false;
+        updateSignatureData();
+    }
+    
+    function handleTouch(e) {
+        e.preventDefault();
+        if (e.type === 'touchstart') {
+            startDrawing(e.touches[0]);
+        } else if (e.type === 'touchmove' && isDrawing) {
+            draw(e.touches[0]);
+        }
+    }
+    
+    function getCoordinates(e) {
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        
+        let clientX, clientY;
+        
+        if (e.type.includes('touch')) {
+            clientX = e.touches[0].clientX;
+            clientY = e.touches[0].clientY;
+        } else {
+            clientX = e.clientX;
+            clientY = e.clientY;
+        }
+        
+        return [
+            (clientX - rect.left) * scaleX,
+            (clientY - rect.top) * scaleY
+        ];
+    }
+    
+    function updateSignatureData() {
+        const signatureData = canvas.toDataURL();
+        document.getElementById('signature-data').value = signatureData;
+        
+        // Enable submit button if signature exists
+        const isEmpty = isCanvasBlank(canvas);
+        document.getElementById('submit-btn').disabled = isEmpty;
+    }
+    
+    function isCanvasBlank(canvas) {
+        const blank = document.createElement('canvas');
+        blank.width = canvas.width;
+        blank.height = canvas.height;
+        
+        return canvas.toDataURL() === blank.toDataURL();
+    }
+    
+    // Clear signature
+    document.getElementById('clear-signature').addEventListener('click', function() {
+        ctx.fillStyle = '#f9f9f9';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        document.getElementById('signature-data').value = '';
+        document.getElementById('submit-btn').disabled = true;
+    });
+    
+    // Save signature
+    document.getElementById('save-signature').addEventListener('click', function() {
+        updateSignatureData();
+        if (!document.getElementById('submit-btn').disabled) {
+            alert('Signature saved successfully! You can now finalize the consent.');
+        }
+    });
+</script>
+{% endblock %}

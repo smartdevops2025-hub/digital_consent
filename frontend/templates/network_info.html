@@ -1,0 +1,276 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card">
+    <h2 style="color: var(--mes-red); margin-bottom: 1.5rem;">
+        <i class="fas fa-network-wired"></i> Network Deployment Information
+    </h2>
+    
+    <div class="system-alert" style="background: linear-gradient(45deg, #007bff, #0056b3); color: white;">
+        <h4><i class="fas fa-info-circle"></i> Hospital Network Access</h4>
+        <p class="mb-0">Share these URLs with hospital staff to access the system from any device on the network.</p>
+    </div>
+
+    <div class="network-info-container">
+        <div class="info-section">
+            <h4><i class="fas fa-server"></i> Server Information</h4>
+            <div class="info-grid">
+                <div class="info-item">
+                    <strong>Hostname:</strong>
+                    <span>{{ network_info.hostname }}</span>
+                </div>
+                <div class="info-item">
+                    <strong>Local IP Address:</strong>
+                    <span>{{ network_info.local_ip }}</span>
+                </div>
+                <div class="info-item">
+                    <strong>Port:</strong>
+                    <span>{{ network_info.port }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <h4><i class="fas fa-link"></i> Access URLs</h4>
+            <div class="url-list">
+                {% for url in network_info.access_urls %}
+                <div class="url-item">
+                    <i class="fas fa-external-link-alt"></i>
+                    <a href="{{ url }}" target="_blank">{{ url }}</a>
+                    <button class="btn-copy" onclick="copyToClipboard('{{ url }}')">
+                        <i class="fas fa-copy"></i> Copy
+                    </button>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="info-section">
+            <h4><i class="fas fa-users"></i> User Access Instructions</h4>
+            <div class="instruction-card">
+                <h5>For Hospital Staff:</h5>
+                <ol>
+                    <li>Ensure device is connected to hospital network</li>
+                    <li>Open web browser (Chrome/Firefox/Edge)</li>
+                    <li>Enter any of the URLs above</li>
+                    <li>Login with provided credentials</li>
+                </ol>
+                
+                <div class="user-credentials">
+                    <h6>Test Credentials:</h6>
+                    <table class="user-table">
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>Password</th>
+                                <th>Role</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>counsellor1</td>
+                                <td>password123</td>
+                                <td><span class="role-badge counsellor">Counsellor</span></td>
+                            </tr>
+                            <tr>
+                                <td>doctor1</td>
+                                <td>doctor123</td>
+                                <td><span class="role-badge doctor">Doctor</span></td>
+                            </tr>
+                            <tr>
+                                <td>admin</td>
+                                <td>admin123</td>
+                                <td><span class="role-badge admin">Admin</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <h4><i class="fas fa-shield-alt"></i> Security Information</h4>
+            <div class="security-alert">
+                <p><strong>Important Security Notes:</strong></p>
+                <ul>
+                    <li>✅ System is accessible only within hospital network</li>
+                    <li>✅ All data is encrypted and stored locally</li>
+                    <li>✅ User authentication required for access</li>
+                    <li>✅ Automatic backups are created daily</li>
+                    <li>⚠️ Change default passwords for production use</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="action-buttons">
+        <a href="{{ url_for('dashboard') }}" class="btn-primary">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+        <button onclick="printNetworkInfo()" class="btn-secondary">
+            <i class="fas fa-print"></i> Print Instructions
+        </button>
+    </div>
+</div>
+
+<style>
+.network-info-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.info-section {
+    background: var(--mes-light-gray);
+    padding: 1.5rem;
+    border-radius: 8px;
+    border-left: 4px solid var(--mes-red);
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.info-item {
+    display: flex;
+    justify-content: between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.info-item strong {
+    min-width: 150px;
+    color: var(--mes-dark-gray);
+}
+
+.url-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.url-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem;
+    background: white;
+    border-radius: 5px;
+    border: 1px solid #dee2e6;
+}
+
+.url-item a {
+    color: #007bff;
+    text-decoration: none;
+    flex: 1;
+}
+
+.url-item a:hover {
+    text-decoration: underline;
+}
+
+.btn-copy {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 0.25rem 0.5rem;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+
+.btn-copy:hover {
+    background: #5a6268;
+}
+
+.instruction-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-top: 1rem;
+}
+
+.user-credentials {
+    margin-top: 1.5rem;
+}
+
+.user-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+.user-table th, .user-table td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.user-table th {
+    background: var(--mes-red);
+    color: white;
+}
+
+.role-badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.role-badge.admin { background: #dc3545; color: white; }
+.role-badge.doctor { background: #007bff; color: white; }
+.role-badge.counsellor { background: #28a745; color: white; }
+
+.security-alert {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 5px;
+    padding: 1rem;
+    margin-top: 1rem;
+}
+
+.security-alert ul {
+    margin: 0.5rem 0 0 1.5rem;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    justify-content: center;
+}
+
+@media (max-width: 768px) {
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .url-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+    }
+}
+</style>
+
+<script>
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(function() {
+        alert('URL copied to clipboard: ' + text);
+    }, function(err) {
+        console.error('Could not copy text: ', err);
+    });
+}
+
+function printNetworkInfo() {
+    window.print();
+}
+</script>
+{% endblock %}
