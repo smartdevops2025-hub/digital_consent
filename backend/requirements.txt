@@ -1,9 +1,0 @@
-Flask==2.3.3
-PyPDF2==3.0.1
-reportlab==4.0.4
-requests==2.31.0
-
-Pillow==10.0.1  # Add this for image processing
-Flask
-Flask-SQLAlchemy
-reportlab
